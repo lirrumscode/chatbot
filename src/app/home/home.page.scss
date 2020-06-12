@@ -1,0 +1,28 @@
+$font: "Poppins";
+ion-title {
+  font-family: $font;
+}
+.title {
+  font-family: $font;
+  text-align: justify;
+  padding: 20px;
+}
+
+.txt {
+  font-family: $font;
+  font-size: 14px;
+  padding-left: 20px;
+  padding-right: 20px;
+  text-align: justify;
+}
+ion-button{
+  display: block;
+    margin: auto;
+    font-family: $font;
+    height: 50px;
+    width: 70%;
+    margin-top: 15%;
+  ion-icon{
+    padding-left: 20px;
+  }
+}

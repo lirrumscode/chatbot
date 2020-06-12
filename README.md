@@ -1,1 +1,2 @@
-# chatbot with Conversational-form from Ionic v55 + angular 8
+# chatbot with Conversational-form 
+from Ionic v5 + angular 8

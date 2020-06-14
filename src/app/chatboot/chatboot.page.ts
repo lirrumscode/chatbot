@@ -1,5 +1,11 @@
 import { Component, ViewChild, ElementRef, OnInit } from "@angular/core";
 import { ConversationalForm } from "conversational-form";
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpErrorResponse,
+} from "@angular/common/http";
+import { AlertController } from "@ionic/angular";
 
 @Component({
   selector: "app-chatboot",
@@ -10,6 +16,7 @@ export class ChatbootPage implements OnInit {
   @ViewChild("form") form: ElementRef;
   formulario: any;
   data: any;
+
   fields = [
     {
       tag: "cf-robot-message",
@@ -25,7 +32,7 @@ export class ChatbootPage implements OnInit {
       type: "text",
       required: "required",
       name: "name",
-      "cf-questions": "What is your firstname?",
+      "cf-questions": "What is your name?",
     },
     {
       tag: "input",
@@ -54,20 +61,22 @@ export class ChatbootPage implements OnInit {
       tag: "input",
       required: "required",
       type: "text",
-      name: "lastname",
+      name: "email",
       "cf-questions": "What is your email?",
     },
   ];
 
-  constructor() {}
+  constructor(
+    private http: HttpClient,
+  ) {}
 
   ngOnInit() {
-    console.log("init", this);
     this.formulario = ConversationalForm.startTheConversation({
       options: {
         theme: "dark",
+        scrollAcceleration: 0,
         showProgressBar: true,
-        submitCallback: this.submitCallback.bind(this),
+        submitCallback: this.submitCallbackRobot.bind(this),
         preventAutoFocus: true,
         robotImage:
           "https://pbs.twimg.com/profile_images/1120639951056572417/Rs0Dm2mm_400x400.jpg",
@@ -77,13 +86,29 @@ export class ChatbootPage implements OnInit {
     });
     this.form.nativeElement.appendChild(this.formulario.el);
   }
-  submitCallback() {
-    var formDataSerialized = this.formulario.getFormData(true);
+  submitCallbackRobot() {
+    let formDataSerialized = this.formulario.getFormData(true);
     this.data = formDataSerialized;
     this.formulario.addRobotChatResponse(
       "Thanks, " +
         this.data.name +
         " by writing for us, we will contact you shortly."
     );
+    this.sendEmail(this.data);
+  }
+
+  sendEmail(data) {
+    const email = data;
+    const headers = new HttpHeaders({ "Content-Type": "application/json" });
+    this.http
+      .post(
+        "endpoint FormsPree",
+        { name: email.name, replyto: email.email },
+        { headers: headers }
+      )
+      .subscribe((response) => {
+        console.log(response);
+        alert('Send Email with success! :D');
+      });
   }
 }

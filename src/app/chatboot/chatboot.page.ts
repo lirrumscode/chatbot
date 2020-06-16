@@ -1,5 +1,6 @@
 import { Component, ViewChild, ElementRef, OnInit } from "@angular/core";
 import { ConversationalForm } from "conversational-form";
+import { AuthService } from "src/app/services/auth.service";
 import {
   HttpClient,
   HttpHeaders,
@@ -16,7 +17,7 @@ export class ChatbootPage implements OnInit {
   @ViewChild("form") form: ElementRef;
   formulario: any;
   data: any;
-
+  obj = {};
   fields = [
     {
       tag: "cf-robot-message",
@@ -64,11 +65,23 @@ export class ChatbootPage implements OnInit {
       name: "email",
       "cf-questions": "What is your email?",
     },
+    {
+      tag: "input",
+      required: "required",
+      type: "text",
+      name: "subject",
+      "cf-questions": "What's your subject?",
+    },
+    {
+      tag: "input",
+      required: "required",
+      type: "text",
+      name: "message",
+      "cf-questions": "What's your message?",
+    },
   ];
 
-  constructor(
-    private http: HttpClient,
-  ) {}
+  constructor(private auth: AuthService) {}
 
   ngOnInit() {
     this.formulario = ConversationalForm.startTheConversation({
@@ -94,21 +107,19 @@ export class ChatbootPage implements OnInit {
         this.data.name +
         " by writing for us, we will contact you shortly."
     );
-    this.sendEmail(this.data);
+    this.obj = {
+      name: this.data.name,
+      email: this.data.email,
+      message: this.data.message,
+      asunto: this.data.subject,
+    };
+    this.sendEmail(this.obj);
   }
 
   sendEmail(data) {
-    const email = data;
-    const headers = new HttpHeaders({ "Content-Type": "application/json" });
-    this.http
-      .post(
-        "endpoint FormsPree",
-        { name: email.name, replyto: email.email },
-        { headers: headers }
-      )
-      .subscribe((response) => {
-        console.log(response);
-        alert('Send Email with success! :D');
-      });
+    this.auth.sendEmail(data).then((res) => {
+      console.log(res);
+      alert('EMAIL SEND WITH SUCCESS');
+    });
   }
 }
